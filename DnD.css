@@ -1,0 +1,42 @@
+.box {
+	height: 300px;
+	/*max-width: 250px;*/
+	/*width: auto;*/
+	width: 300px;
+	overflow: auto;
+	margin-right: 1em;
+	border: 1px solid gray;
+	display: inline-block;
+	vertical-align: top; /* Vertical-align value defaults to bottom when display:inline-block is set */
+}
+
+/* Prevent text content of the draggable elements from dragging*/
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
+
+div.item {
+	padding: 5px 20px 5px 20px;
+	cursor: move
+}
+
+div.box > div:nth-of-type(odd) {
+	 background-color: #e0e0e0;
+}
+
+#inputSearch { 
+	width: inherit;
+	position: absolute;
+	margin-bottom: 10px;
+	text-indent: 18px
+}
+
+div#source > div:nth-of-type(1) {
+	margin-top: 30px
+}

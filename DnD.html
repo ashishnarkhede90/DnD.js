@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Drag and Drop Demo</title>
+		<script type="text/javascript" src="DnD.js"></script>
+		<link rel="stylesheet" type="text/css" href="DnD.css">
+	</head>
+	
+	<body>
+		<table>
+			<tr style="text-align: center;">
+				<td>Source</td>
+				<td>Target</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="box" id="source">
+						<input type="text" id="inputSearch" placeholder="Search a permission set" autocomplete="off" text-indent="10px" />
+					</div>
+				</td>
+				<td>
+					<div class="box" id="target" dropzone="move"></div>
+				</td>
+			</tr>
+		</table>
+		
+		
+		<script>
+				var _dnd = _dnd('source', 'target', 'inputSearch', 'item');
+				console.log(_dnd);
+				// JSON array with details of options to populate in the source list
+				// this should come from server
+				var sourceOptions = [
+				  {
+				    "Id": "0PS60000000WMrfGAG",
+				    "Name": "Acces_to_all_Campaign_Record_Types",
+				    "Label": "Acces to all Campaign Record Types"
+				  },
+				  {
+				    "Id": "0PS60000000WMz5GAG",
+				    "Name": "Access_To_Case_Field_Grade",
+				    "Label": "Access To Case Field Grade"
+				  },
+				  {
+				    "Id": "0PS320000004O6TGAU",
+				    "Name": "Access_To_Edit_Account_Name_in_Case_Object",
+				    "Label": "Access To Edit Account Name in Case Object"
+				  },
+				  {
+				    "Id": "0PS60000000WNpGGAW",
+				    "Name": "Access_To_LSS_Targeting_Fields_In_Campaign",
+				    "Label": "Access To LSS Targeting Fields In Campaign"
+				  },
+				  {
+				    "Id": "0PS60000000WKQXGA4",
+				    "Name": "Access_for_Booking_Region_Field",
+				    "Label": "Access for Booking Region Field"
+				  }
+				];
+
+				// populate options in source list
+				_dnd.populateSourceOptions(sourceOptions);
+				_dnd.init();
+
+		</script>
+	</body>
+</html>
