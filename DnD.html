@@ -103,12 +103,31 @@
 				  }
 				];
 
-				var _dnd2 = _dnd('source1', 'target1', 'inputSearch1', 'item', sourceOptions2, ['target1']);
-				_dnd2.init();
+				var config1 = {
+					'sourceId': 'source',
+					'targetId': 'target',
+					'searchFilterId': 'inputSearch',
+					'draggableElemClass': 'item',
+					'optionsMap': sourceOptions,
+					'validDropTargets': ['target'] 
+				};
 
-				var _dnd1 = _dnd('source', 'target', 'inputSearch', 'item', sourceOptions, ['target']);
+				//var _dnd1 = _dnd('source', 'target', 'inputSearch', 'item', sourceOptions, ['target']);
+				var _dnd1 = _dnd(config1);
 				_dnd1.init();
 
+				var config2 = {
+					'sourceId': 'source1',
+					'targetId': 'target1',
+					'searchFilterId': 'inputSearch1',
+					'draggableElemClass': 'item',
+					'optionsMap': sourceOptions2,
+					'validDropTargets': ['target1'] 
+				};
+
+				//var _dnd2 = _dnd('source1', 'target1', 'inputSearch1', 'item', sourceOptions2, ['target1']);
+				var _dnd2 = _dnd(config2);
+				_dnd2.init();
 		</script>
 	</body>
 </html>

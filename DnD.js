@@ -10,29 +10,30 @@
 	validDropTargets - List of drop valid target ids to be used for a given list of options. This will help prevent dropping 1 item into multiple places if that's the requirement 
 	============= */
 
-function _dnd(source, target, searchFilterId, itemClassName, optionsMap, validDropTargets) {
+function _dnd(config) {
 	var about = {
 		Version: 0.1,
 		Author: "Ashish N",
 		Created: "Summer 2017"
 	}
 
-	if(source && target) {
+	if(config.sourceId && config.targetId) {
 		// Avoid clobbering the window scope
 		// return new _dnd object if we're in the wrong scope
 		if(this == window) {
-			return new _dnd(source, target, searchFilterId, itemClassName, optionsMap, validDropTargets);
+			return new _dnd(config);
 		}
 
 		// We're in the right scope. Init our object and return it
-		this.source 			= document.getElementById(source);
-		this.target 			= document.getElementById(target);
-		this.searchFilter 		= document.getElementById(searchFilterId);
+		this.source 			= document.getElementById(config.sourceId);
+		this.target 			= document.getElementById(config.targetId);
+		this.searchFilter 		= document.getElementById(config.searchFilterId);
 		this.draggedElem 		= ''; // element being dragged at a particular instance
-		this.itemClassName 		= itemClassName; // name of a common class used for each child div in the list of options 
+		this.itemClassName 		= config.draggableElemClass; // name of a common class used for each child div in the list of options 
 		this.sourceOptions 		= ''; // filtered list of json objects used to populate source list
-		this.optionsMap 		= optionsMap; // unfiltered list of json objects originally returned by the server
-		this.validDropTargets 	= validDropTargets;
+		this.optionsMap 		= JSON.parse(config.optionsMap); // unfiltered list of json objects originally returned by the server
+		//this.optionsMap 		= config.optionsMap;
+		this.validDropTargets 	= config.validDropTargets;
 
 		return this;
 
@@ -153,17 +154,14 @@ _dnd.prototype = {
 	// Handler for drag enter event. dragenter - fired when a dragged element or text selection enters a valid drop target.
 	handleDragEnter: function(e) {
 		//console.log('handleDragEnter for ' + this.source.id);
-		// change styling on drop target
-		
 		if(this.validDropTargets && this.validDropTargets.length > 0) {
 			this.validDropTargets.forEach(function(dt) {
 				var elem = document.getElementById(dt);
 
-				// this will make sure that only valid drop target is highlighted. this in in efforts to make sure elements cannot be dropped into multiple targets
+				// Check if the target element's parent id is same as source id on `this` instance. this will make sure that only valid drop target is highlighted. this in in efforts to make sure elements cannot be dropped into multiple targets
 				if(e.target.parentNode.id == this.source.id && this.draggedElem) {
 					elem.style.border = '1px dashed #0070d2';
 				}
-				//document.getElementById(dt).style.border = '1px dashed #0070d2';
 			}, this);
 		}
 	},
@@ -191,31 +189,33 @@ _dnd.prototype = {
 			3) div with id of child list elements since an element can be dropped on one of the existing elements in the drop target
 		 ============ */
 		  
-		var isDropTargetAChildElem = currentDropTarget.className.indexOf(this.itemClassName) > -1;
+		// 1) prevent processing when dragged element is dropped into the originating parent itself, 
+		// 2) check if the target is valid 
+		var isValidDropTarget = true;
 
-		if(currentDropTarget.id == this.target.id || currentDropTarget.id == this.source.id || isDropTargetAChildElem) {
+		var isDropTargetAChildElem = currentDropTarget.className.indexOf(this.itemClassName) > -1;
+		if(isDropTargetAChildElem) {
+			isValidDropTarget = (this.validDropTargets.indexOf(currentDropTarget.parentNode.id) > -1 || currentDropTarget.parentNode.id == this.source.id);
+		}
+
+		if(currentDropTarget.id == this.target.id || currentDropTarget.id == this.source.id || isValidDropTarget) {
 			// get the div that originally contained dragged element i.e. parent of the dragged element
 			var parentOfDraggedElem = this.draggedElem.parentNode.id;
-			// 1) prevent processing when dragged element is dropped into the originating parent itself, 
-			// 2) check if the target is valid 
-
-			if(isDropTargetAChildElem) {
-				var isValidDropTarget = this.validDropTargets.indexOf(currentDropTarget.parentNode.id) > -1;
-				if(!isValidDropTarget) return;
-			}
  
 			if(currentDropTarget.id == parentOfDraggedElem || currentDropTarget.parentNode.id == parentOfDraggedElem) {
 				return;
 			}
 
-			//remove the dragged element from the source / original parent
-			this.draggedElem.parentNode.removeChild( this.draggedElem );
-
+		
 			// handle scenario where an element is dropped over an exisitng element in the drop target, also check if element is being dropped into the originating parent itself
 			if(currentDropTarget.className.indexOf(this.itemClassName) > -1 && currentDropTarget.parentNode.id != parentOfDraggedElem) {
+				//remove the dragged element from the source / original parent
+				this.draggedElem.parentNode.removeChild( this.draggedElem );
 				currentDropTarget.parentNode.appendChild(this.draggedElem);
 			}
-			else {
+			else if(this.validDropTargets.indexOf(currentDropTarget.id) > -1 || currentDropTarget.id == this.source.id){
+				//remove the dragged element from the source / original parent
+				this.draggedElem.parentNode.removeChild( this.draggedElem );
 				currentDropTarget.appendChild(this.draggedElem);
 			}
 		}
