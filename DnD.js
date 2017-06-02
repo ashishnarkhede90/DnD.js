@@ -31,8 +31,8 @@ function _dnd(config) {
 		this.draggedElem 		= ''; // element being dragged at a particular instance
 		this.itemClassName 		= config.draggableElemClass; // name of a common class used for each child div in the list of options 
 		this.sourceOptions 		= ''; // filtered list of json objects used to populate source list
-		this.optionsMap 		= JSON.parse(config.optionsMap); // unfiltered list of json objects originally returned by the server
-		//this.optionsMap 		= config.optionsMap;
+		//this.optionsMap 		= JSON.parse(config.optionsMap); // unfiltered list of json objects originally returned by the server
+		this.optionsMap 		= config.optionsMap;
 		this.validDropTargets 	= config.validDropTargets;
 
 		return this;
@@ -50,6 +50,13 @@ _dnd.prototype = {
 		// Attach event listeners to the elements
 		console.log('init for ' + this.source.id)
 
+		this.populateSourceOptions(this.optionsMap);
+
+		// add event listener for keyup event for search box elements
+		if(this.searchFilter) {
+			this.searchFilter.addEventListener('keyup', this.filterOptions.bind(this));	
+		}
+
 		/* ================
 			Add event handlers for drag and drop events
 			Use this.eventHandlerName.bind(this) to make sure that the this object context is passed to the handler.
@@ -57,13 +64,6 @@ _dnd.prototype = {
 			========================================
 		*/
 
-		this.populateSourceOptions(this.optionsMap);
-
-		// add event listener for keyup event for search box elements
-		if(this.searchFilter) {
-			this.searchFilter.addEventListener('keyup', this.filterOptions.bind(this));	
-		}
-		
 		// add event listeners to draggable elements
 		var draggableElems = document.querySelectorAll('.' + this.itemClassName);
 		draggableElems.forEach(function(elem) {
@@ -112,6 +112,12 @@ _dnd.prototype = {
 				newDiv.dataset.name = option['Name'];
 				newDiv.innerHTML = option['Label'];
 				
+				// attach necessary event listeners
+					// add handler for drag start event. dragstart -  fired when the user starts dragging an element 
+					newDiv.addEventListener("dragstart", this.handleDragStart.bind(this), false);
+					// dragend - when a drag operation is being ended (by releasing a mouse button or hitting the escape key).
+					newDiv.addEventListener("dragend", this.handleDragEnd.bind(this), false);
+
 				// attach div to document fragment		
 				docFrag.appendChild(newDiv);
 			}
@@ -188,13 +194,12 @@ _dnd.prototype = {
 			2) div with id this.target.id
 			3) div with id of child list elements since an element can be dropped on one of the existing elements in the drop target
 		 ============ */
-		  
-		// 1) prevent processing when dragged element is dropped into the originating parent itself, 
-		// 2) check if the target is valid 
-		var isValidDropTarget = true;
 
+		var isValidDropTarget = true;
+		// check if the drop target is a child element in a list
 		var isDropTargetAChildElem = currentDropTarget.className.indexOf(this.itemClassName) > -1;
 		if(isDropTargetAChildElem) {
+			// in this case, drop target is valid if its one of the valid drop targets specified on this instance or its the source from where the element was originally moved
 			isValidDropTarget = (this.validDropTargets.indexOf(currentDropTarget.parentNode.id) > -1 || currentDropTarget.parentNode.id == this.source.id);
 		}
 
@@ -205,7 +210,6 @@ _dnd.prototype = {
 			if(currentDropTarget.id == parentOfDraggedElem || currentDropTarget.parentNode.id == parentOfDraggedElem) {
 				return;
 			}
-
 		
 			// handle scenario where an element is dropped over an exisitng element in the drop target, also check if element is being dropped into the originating parent itself
 			if(currentDropTarget.className.indexOf(this.itemClassName) > -1 && currentDropTarget.parentNode.id != parentOfDraggedElem) {
