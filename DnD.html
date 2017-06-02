@@ -15,7 +15,7 @@
 			<tr>
 				<td>
 					<div class="box" id="source">
-						<input type="text" id="inputSearch" placeholder="Search a permission set" autocomplete="off" text-indent="10px" />
+						<input type="text" class="searchBox" id="inputSearch" placeholder="Search a permission set" autocomplete="off" text-indent="10px" />
 					</div>
 				</td>
 				<td>
@@ -23,11 +23,28 @@
 				</td>
 			</tr>
 		</table>
+
+		<br />
 		
+		<table>
+			<tr style="text-align: center;">
+				<td>Source</td>
+				<td>Target</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="box" id="source1">
+						<input type="text" class="searchBox" id="inputSearch1" placeholder="Search a permission set" autocomplete="off" text-indent="10px" />
+					</div>
+				</td>
+				<td>
+					<div class="box" id="target1" dropzone="move"></div>
+				</td>
+			</tr>
+		</table>
 		
 		<script>
-				var _dnd = _dnd('source', 'target', 'inputSearch', 'item');
-				console.log(_dnd);
+				
 				// JSON array with details of options to populate in the source list
 				// this should come from server
 				var sourceOptions = [
@@ -58,9 +75,39 @@
 				  }
 				];
 
-				// populate options in source list
-				_dnd.populateSourceOptions(sourceOptions);
-				_dnd.init();
+				var sourceOptions2 = [
+				  {
+				    "Id": "asd",
+				    "Name": "Acces_to_all_Campaign_Record_Types",
+				    "Label": "Acces to all Campaign Record Types"
+				  },
+				  {
+				    "Id": "fhh",
+				    "Name": "Access_To_Case_Field_Grade",
+				    "Label": "Access To Case Field Grade"
+				  },
+				  {
+				    "Id": "hjg",
+				    "Name": "Access_To_Edit_Account_Name_in_Case_Object",
+				    "Label": "Access To Edit Account Name in Case Object"
+				  },
+				  {
+				    "Id": "ghh",
+				    "Name": "Access_To_LSS_Targeting_Fields_In_Campaign",
+				    "Label": "Access To LSS Targeting Fields In Campaign"
+				  },
+				  {
+				    "Id": "fgf",
+				    "Name": "Access_for_Booking_Region_Field",
+				    "Label": "Access for Booking Region Field"
+				  }
+				];
+
+				var _dnd2 = _dnd('source1', 'target1', 'inputSearch1', 'item', sourceOptions2, ['target1']);
+				_dnd2.init();
+
+				var _dnd1 = _dnd('source', 'target', 'inputSearch', 'item', sourceOptions, ['target']);
+				_dnd1.init();
 
 		</script>
 	</body>
