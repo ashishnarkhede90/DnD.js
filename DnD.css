@@ -38,8 +38,8 @@ div.box > div:nth-of-type(odd) {
 	text-indent: 18px
 }
 
-div#source > div:nth-of-type(1) {
-	/*margin-top: 30px*/
+div.source > div:nth-of-type(1) {
+	margin-top: 30px
 }
 
 .dropTagetHightlight {

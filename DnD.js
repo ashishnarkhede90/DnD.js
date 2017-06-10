@@ -31,9 +31,10 @@ function _dnd(config) {
 		this.draggedElem 		= ''; // element being dragged at a particular instance
 		this.itemClassName 		= config.draggableElemClass; // name of a common class used for each child div in the list of options 
 		this.sourceOptions 		= ''; // filtered list of json objects used to populate source list
-		//this.optionsMap 		= JSON.parse(config.optionsMap); // unfiltered list of json objects originally returned by the server
-		this.optionsMap 		= config.optionsMap;
+		this.optionsMap 		= JSON.parse(config.optionsMap); // unfiltered list of json objects originally returned by the server
+		//this.optionsMap 		= config.optionsMap;
 		this.validDropTargets 	= config.validDropTargets;
+		this.selectedValuesJSON = [];
 
 		return this;
 
@@ -101,6 +102,7 @@ _dnd.prototype = {
 		var docFrag = document.createDocumentFragment();
 
 		for(var i=0; i<sourceOptions.length; i++) {
+
 			var option = sourceOptions[i];
 			
 			if(option) {
@@ -108,7 +110,7 @@ _dnd.prototype = {
 				newDiv.className = 'item';
 				newDiv.setAttribute('draggable', true);
 				newDiv.setAttribute('Id', option['Id']);
-				newDiv.dataset.psid = option['Id'];
+				newDiv.dataset.entityid = option['Id'];
 				newDiv.dataset.name = option['Name'];
 				newDiv.innerHTML = option['Label'];
 				
@@ -117,6 +119,11 @@ _dnd.prototype = {
 					newDiv.addEventListener("dragstart", this.handleDragStart.bind(this), false);
 					// dragend - when a drag operation is being ended (by releasing a mouse button or hitting the escape key).
 					newDiv.addEventListener("dragend", this.handleDragEnd.bind(this), false);
+
+					// for the first div, add margin-top
+					if(i == 0) {
+						newDiv.setAttribute('style', 'margin-top: 30px'); 
+					}
 
 				// attach div to document fragment		
 				docFrag.appendChild(newDiv);
@@ -221,6 +228,31 @@ _dnd.prototype = {
 				//remove the dragged element from the source / original parent
 				this.draggedElem.parentNode.removeChild( this.draggedElem );
 				currentDropTarget.appendChild(this.draggedElem);
+			}
+		}
+
+		var selectedValJSON = {
+			'Id': this.draggedElem.dataset.entityid, // system id of the item
+			'Name': this.draggedElem.dataset.name, // system api name of the item
+			'Label': this.draggedElem.innerHTML // system label of the item
+		};
+
+		// if item is being dropped into the target box
+		if(e.target.id == this.target.id || e.target.parentNode.id == this.target.id) {
+			this.selectedValuesJSON.push(selectedValJSON);
+		}
+		else if(e.target.id == this.source.id || e.target.parentNode.id == this.source.id) { // if the item was moved from target to source box
+			// find index of the item to remove from selected json
+			var itemIndexToSplice = this.getPopIndex(selectedValJSON, this.selectedValuesJSON);
+			// remove item from selected json
+			this.selectedValuesJSON.splice(itemIndexToSplice, 1);
+		}	
+	},
+
+	getPopIndex: function(itemToRemove, selectedValuesJSON) {
+		for(var i=0; i<selectedValuesJSON.length; i++) {
+			if(selectedValuesJSON[i]['Id'] == itemToRemove['Id']) {
+				return i;
 			}
 		}
 	},
