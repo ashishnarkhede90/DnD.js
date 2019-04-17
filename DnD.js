@@ -31,8 +31,8 @@ function _dnd(config) {
 		this.draggedElem 		= ''; // element being dragged at a particular instance
 		this.itemClassName 		= config.draggableElemClass; // name of a common class used for each child div in the list of options 
 		this.sourceOptions 		= ''; // filtered list of json objects used to populate source list
-		this.optionsMap 		= JSON.parse(config.optionsMap); // unfiltered list of json objects originally returned by the server
-		//this.optionsMap 		= config.optionsMap;
+		//this.optionsMap 		= JSON.parse(config.optionsMap); // unfiltered list of json objects originally returned by the server
+		this.optionsMap 		= config.optionsMap;
 		this.validDropTargets 	= config.validDropTargets;
 		this.selectedValuesJSON = [];
 
